@@ -18,6 +18,7 @@ from langchain_core.documents import Document
 # 项目内部工具
 from utils.path import PROJECT_PATH
 from scripts.rag.process_paper import process_allPapers
+from scripts.rag.process_paper import embed_model
 
 
 """拼接documents和embeddings，构建faiss"""
@@ -56,13 +57,6 @@ index.add(embeds)
 
 
 """读取embedding模型"""
-embed_model_dir = snapshot_download(
-    model_id="BAAI/bge-m3",
-    cache_dir=os.path.join(PROJECT_PATH, "models"),
-)
-embed_model = SentenceTransformer(embed_model_dir, device="cuda")
-
-
 """读取rerank模型"""
 rerank_model_dir = snapshot_download(
     model_id="AI-ModelScope/bge-reranker-v2-m3",

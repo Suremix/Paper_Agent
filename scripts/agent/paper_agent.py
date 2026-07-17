@@ -2,6 +2,7 @@
 from dotenv import load_dotenv
 
 # agent相关
+from langchain.chat_models import init_chat_model
 from langchain.agents import create_agent
 from langgraph.checkpoint.memory import InMemorySaver
 from langchain.agents.middleware import SummarizationMiddleware
@@ -13,9 +14,10 @@ from scripts.tool.search_paper_online import search_paper_online
 from scripts.agent.prompt import agent_system_prompt
 
 load_dotenv()   # 加载环境
+model = init_chat_model("deepseek-chat", streaming=True)
 
 paper_agent = create_agent(
-    model="deepseek-chat",
+    model=model,
     tools=[read_paper_library, search_paper_online],
     system_prompt=agent_system_prompt,
     checkpointer=InMemorySaver(),
