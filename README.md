@@ -36,4 +36,4 @@ DEEPSEEK_API_KEY=自己的key
 docker run -p 8000:8000 -v ./models:/app/models -v ./data:/app/data --env-file .env paper_agent
 ```
 
-启动Docker容器后，FastAPI服务将在 http://localhost:8000/docs 可用，交互式API文档可访问 http://localhost:8000/docs 。
+启动Docker容器后，FastAPI服务将在 http://localhost:8000/ 可用，交互式API文档可访问 http://localhost:8000/docs 。
