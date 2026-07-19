@@ -3,7 +3,7 @@ from langchain.tools import tool
 
 # 项目内部工具
 from scripts.rag.retrieval import retrieval_docs
-from scripts.rag.rewrite import rewrite2CN_EN
+from scripts.rag.rewrite import rewrite_query
 from scripts.rag.prompt import write_rag_prompt
 
 
@@ -21,8 +21,8 @@ def read_paper_library(rewritten_query: str) -> str:
     Args:
         rewritten_query: rewritten standalone query
     """
-    CNEN_query = rewrite2CN_EN(rewritten_query)   # 重写为有中英文内容的query
-    top_docs = retrieval_docs(CNEN_query)  # 用重写过后的query检索
+    rewritten_query = rewrite_query(rewritten_query)   # 重写query
+    top_docs = retrieval_docs(rewritten_query)  # 用重写过后的query检索
     docs_prompt = write_rag_prompt(top_docs)  # 把docs组成prompt
     return docs_prompt
 
@@ -31,6 +31,6 @@ if __name__ == "__main__":
     """
     这个文件负责构建一个阅读论文库的论文，并通过RAG回答用户问题的tool
     """
-    docs_prompt = read_paper_library("帮我找一下2025年中国臭氧浓度反演的文章有哪些")
-    print(docs_prompt)
+    # docs_prompt = read_paper_library("帮我找一下2025年中国臭氧浓度反演的文章有哪些")
+    # print(docs_prompt)
     print()

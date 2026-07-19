@@ -118,22 +118,24 @@ def process_allPapers() -> None:
     """
     # 遍历papers文件夹
     folder_path = os.path.join(PROJECT_PATH, "data/papers")
-    paper_name_list = os.listdir(folder_path)
-    if ".gitkeep" in paper_name_list:
-        paper_name_list.remove(".gitkeep")   # 移除.gitkeep文件
+    file_name_list = os.listdir(folder_path)
+    if ".gitkeep" in file_name_list:
+        file_name_list.remove(".gitkeep")   # 移除.gitkeep文件
 
-    for i, paper_name in enumerate(paper_name_list):
+    for i, file_name in enumerate(file_name_list):
         # 根据paper_name构建新的论文文件夹，并且剪切pdf
+        paper_name = os.path.splitext(file_name)[0].strip(" ")   # 获取无后缀处理空格后的pdf的名字
         paper_folder = os.path.join(PROJECT_PATH, "data/processed_papers/{}".format(paper_name))
         os.makedirs(paper_folder, exist_ok=True)
 
-        file_path = os.path.join(folder_path, paper_name)
-        new_paper_path = os.path.join(paper_folder, "paper.pdf")
+        # 剪切pdf
+        file_path = os.path.join(folder_path, file_name)   # 原文件路径
+        new_paper_path = os.path.join(paper_folder, "paper.pdf")   # 新文件路径
         shutil.move(file_path, new_paper_path)   # 剪切pdf
 
         # 处理pdf为docs、embeds和metadata
         process_1Paper(new_paper_path, paper_folder)   # 处理pdf
-        print("\rProcess {}/{} {} Done".format(i + 1, len(paper_name_list), paper_name), end="")
+        print("\rProcess {}/{} {} Done".format(i + 1, len(file_name_list), paper_name), end="")
     print("\rPapers处理完成")
 
 
@@ -171,7 +173,7 @@ if __name__ == "__main__":
     # print(len(docs))
 
     """process"""
-    # process_allPapers()
+    process_allPapers()
 
     """refresh"""
-    refresh_paper_library()
+    # refresh_paper_library()
