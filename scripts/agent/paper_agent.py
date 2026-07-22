@@ -24,8 +24,8 @@ paper_agent = create_agent(
     middleware=[
         SummarizationMiddleware(
             model="deepseek-chat",
-            trigger=("messages", 20),
-            keep=("messages", 6),
+            trigger=("messages", 50),
+            keep=("messages", 20),
         )
     ]
 )

@@ -8,7 +8,7 @@ import joblib
 import numpy as np
 
 # 数据处理相关
-import logging
+import torch
 from langchain_community.document_loaders import PyMuPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from modelscope import snapshot_download
@@ -27,7 +27,8 @@ embed_model_dir = snapshot_download(
     model_id=model_id,
     cache_dir=os.path.join(PROJECT_PATH, "models")  # 将模型下载至项目中
 )
-embed_model = SentenceTransformer(embed_model_dir, device="cuda")
+device = "cuda" if torch.cuda.is_available() else "cpu"
+embed_model = SentenceTransformer(embed_model_dir, device=device)
 
 
 def load_pdf(file_path: str) -> list[Document]:
@@ -110,7 +111,7 @@ def process_1Paper(file_path: str, output_folder: str, chunk_size: int = 1024, o
         json.dump(metadata, file, ensure_ascii=False, indent=4)
 
 
-def process_allPapers(chunk_size: int, overlap: int) -> None:
+def process_allPapers(chunk_size: int = 1024, overlap: int = 200) -> None:
     """
     该函数负责处理papers文件夹中所有未处理的pdf文件，包括整理pdf与构建docs、embeds
     在processed_papers文件夹中存放处理后的文件
@@ -180,4 +181,4 @@ if __name__ == "__main__":
     # process_allPapers(1000, 200)
 
     """refresh"""
-    refresh_paper_library(1000, 200)
+    # refresh_paper_library(1000, 200)

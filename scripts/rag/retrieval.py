@@ -6,9 +6,9 @@ import joblib
 import numpy as np
 
 # 检索相关
+import torch
 import faiss
 from modelscope import snapshot_download
-from sentence_transformers import SentenceTransformer
 from langchain_community.retrievers import BM25Retriever
 from sentence_transformers import CrossEncoder
 
@@ -63,7 +63,8 @@ rerank_model_dir = snapshot_download(
     model_id="AI-ModelScope/bge-reranker-v2-m3",
     cache_dir=os.path.join(PROJECT_PATH, "models"),
 )
-rerank_model = CrossEncoder(rerank_model_dir, device="cuda")
+device = "cuda" if torch.cuda.is_available() else "cpu"
+rerank_model = CrossEncoder(rerank_model_dir, device=device)
 
 
 def retrieval_docs_by_vector(query: str, top_k: int) -> list[Document]:
