@@ -5,11 +5,8 @@ from dotenv import load_dotenv
 from langchain.chat_models import init_chat_model
 from langchain.messages import HumanMessage, AIMessage
 
-# 注释类
-from langchain_core.messages import BaseMessage
-
 # 项目内部工具
-from scripts.rag.prompt import rewrite2CN_EN_prompt
+from scripts.rag.prompt import rewrite2CN_EN_prompt, translate_prompt
 
 """读取用于rewrite的模型"""
 load_dotenv()   # 读取api
@@ -42,6 +39,23 @@ def rewrite_query(query: str) -> str:
     """
     query = rewrite2CN_EN(query)
     return query
+
+
+def translate_query(query: str) -> str:
+    """
+    把用户的问题翻译成另一种语言，比如中文变英文，英文变中文。
+    :param query: 用户的问题
+    :return: 翻译后的query
+    """
+    # 把prompt和query结合
+    prompt = f"{translate_prompt}\n\n用户的问题:\n\n{query}"
+    messages = [HumanMessage(prompt)]
+
+    # 输入给大模型
+    response = rewrite_model.invoke(messages)
+
+    translated_query = response.content
+    return translated_query
 
 
 if __name__ == "__main__":

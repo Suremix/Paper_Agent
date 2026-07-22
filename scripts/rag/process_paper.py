@@ -110,10 +110,12 @@ def process_1Paper(file_path: str, output_folder: str, chunk_size: int = 1024, o
         json.dump(metadata, file, ensure_ascii=False, indent=4)
 
 
-def process_allPapers() -> None:
+def process_allPapers(chunk_size: int, overlap: int) -> None:
     """
     该函数负责处理papers文件夹中所有未处理的pdf文件，包括整理pdf与构建docs、embeds
     在processed_papers文件夹中存放处理后的文件
+    :param chunk_size: 切分长度
+    :param overlap: 重叠长度
     :return: None
     """
     # 遍历papers文件夹
@@ -134,14 +136,16 @@ def process_allPapers() -> None:
         shutil.move(file_path, new_paper_path)   # 剪切pdf
 
         # 处理pdf为docs、embeds和metadata
-        process_1Paper(new_paper_path, paper_folder)   # 处理pdf
+        process_1Paper(new_paper_path, paper_folder, chunk_size, overlap)   # 处理pdf
         print("\rProcess {}/{} {} Done".format(i + 1, len(file_name_list), paper_name), end="")
     print("\rPapers处理完成")
 
 
-def refresh_paper_library() -> None:
+def refresh_paper_library(chunk_size: int, overlap: int) -> None:
     """
     该函数负责重新构建论文库中所有论文的docs和embeds等文件，在修改切分方法时需要使用
+    :param chunk_size: 切分长度
+    :param overlap: 重叠长度
     :return: None
     """
     folder_path = os.path.join(PROJECT_PATH, "data/processed_papers")
@@ -152,7 +156,7 @@ def refresh_paper_library() -> None:
     for i, paper_name in enumerate(paper_name_list):
         paper_folder = os.path.join(folder_path, paper_name)
         file_path = os.path.join(paper_folder, "paper.pdf")
-        process_1Paper(file_path, paper_folder)   # 刷新内容
+        process_1Paper(file_path, paper_folder, chunk_size, overlap)   # 刷新内容
 
         print("\rRefresh {}/{} {} Done".format(i + 1, len(paper_name_list), paper_name), end="")
     print("\r论文库刷新完成")
@@ -173,7 +177,7 @@ if __name__ == "__main__":
     # print(len(docs))
 
     """process"""
-    process_allPapers()
+    # process_allPapers(1000, 200)
 
     """refresh"""
-    # refresh_paper_library()
+    refresh_paper_library(1000, 200)

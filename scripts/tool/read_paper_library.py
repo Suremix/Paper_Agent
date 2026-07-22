@@ -2,8 +2,7 @@
 from langchain.tools import tool
 
 # 项目内部工具
-from scripts.rag.retrieval import retrieval_docs
-from scripts.rag.rewrite import rewrite_query
+from scripts.rag.retrieval import retrieval_docs_2way
 from scripts.rag.prompt import write_rag_prompt
 
 
@@ -21,8 +20,7 @@ def read_paper_library(rewritten_query: str) -> str:
     Args:
         rewritten_query: rewritten standalone query
     """
-    rewritten_query = rewrite_query(rewritten_query)   # 重写query
-    top_docs = retrieval_docs(rewritten_query)  # 用重写过后的query检索
+    top_docs = retrieval_docs_2way(rewritten_query, vector_top_k=20, rerank_top_k=5)  # 用重写过后的query检索
     docs_prompt = write_rag_prompt(top_docs)  # 把docs组成prompt
     return docs_prompt
 

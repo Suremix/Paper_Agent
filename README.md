@@ -20,20 +20,16 @@ git clone https://github.com/Suremix/Paper_Agent.git
 cd Paper_Agent
 docker build -t paper_agent .
 ```
-镜像构建完成后，创建自己的项目文件夹，在项目文件夹中创建``data``、``data/papers``与``models/``文件夹。
+
+创建自己的项目文件夹，然后运行以下命令:
 ```
-mkdir -p data/papers
-mkdir -p models/
+docker run -p 8000:8000 paper_agent
 ```
 
-复制``Paper_Agent/.env.example``到你的项目文件夹中，更名为``.env``，并写入自己的Deepseek API Key。
+重命名``.env.example``文件为``.env``，并填入你的Deepseek API Key.
 ```
-DEEPSEEK_API_KEY=自己的key
-```
-
-在你的项目文件中，使用cmd或者powershell运行以下命令:
-```
-docker run -p 8000:8000 -v ./models:/app/models -v ./data:/app/data --env-file .env paper_agent
+cd app
+mv .env.example .env
 ```
 
 启动Docker容器后，FastAPI服务将在 http://localhost:8000/ 可用，交互式API文档可访问 http://localhost:8000/docs 。
