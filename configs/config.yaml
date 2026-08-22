@@ -1,0 +1,7 @@
+mineru:
+  host: 127.0.0.1
+  port: 8000
+
+split:
+  chunk_size: 1000
+  overlap: 200
