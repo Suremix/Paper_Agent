@@ -19,6 +19,8 @@ def process_papers(flag_reload_split: bool = False, flag_reload_encode: bool = F
     # 先检查data/papers是否有未被处理的pdf，如果有，就创建新文件夹，然后用mineru处理为md
     pdf_folder = os.path.join(PROJECT_PATH, "data/papers")
     paper_folder = os.path.join(PROJECT_PATH, "data/processed_papers")
+    os.makedirs(paper_folder, exist_ok=True)   # 创建存储paper文件夹的文件夹
+
     file_name_list = os.listdir(pdf_folder)
     if ".gitkeep" in file_name_list:
         file_name_list.remove(".gitkeep")   # 移除.gitkeep文件
