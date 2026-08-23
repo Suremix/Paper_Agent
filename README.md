@@ -28,7 +28,7 @@ DEEPSEEK_API_KEY="sk-xxxx"
 docker build -t paper_agent .
 docker run -v .\data:/app/data --env-file .env -p 8000:8000 paper_agent
 ```
-启动Docker容器后，FastAPI服务将在 http://localhost:8000/ 可用，交互式API文档可访问 http://localhost:8000/docs 。
+启动Docker容器后，FastAPI服务将在 http://localhost:8000/ 可用，交互式API文档可访问 http://localhost:8000/docs
 
 ### 通过uvicorn开启FastAPI
 确保``Python>=3.10``，在克隆项目后构建虚拟环境，安装依赖项
@@ -42,7 +42,7 @@ pip install -r requirements.txt
 ```
 uvicorn cli.fast_api:app --host 0.0.0.0 --port 8000
 ```
-
+开启后，FastAPI服务将在 http://localhost:8000/ 可用，交互式API文档可访问 http://localhost:8000/docs
 
 ## Paper Management
 在``data/papers``中放入原始论文pdf文件，程序处理后的文件将存放在``data/processed_papers``中。
