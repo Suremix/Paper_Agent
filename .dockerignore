@@ -1,0 +1,17 @@
+__pycache__
+
+.git/
+.idea/
+.venv/
+data/history/
+data/temp/
+evaluation/
+test/
+
+models/*
+
+data/papers/*
+data/processed_papers/*
+
+.env
+.gitignore
