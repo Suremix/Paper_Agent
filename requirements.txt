@@ -4,6 +4,7 @@ python-dotenv==1.2.2
 requests==2.34.2
 tqdm==4.70.0
 pyyaml==6.0.3
+pydantic==2.13.4
 
 # 科学计算库
 numpy==2.2.6
@@ -21,6 +22,10 @@ langgraph==1.2.9
 langgraph-checkpoint-sqlite==3.1.1
 
 faiss-cpu==1.15.0
+
+# FastAPI相关
+fastapi==0.141.1
+uvicorn==0.52.1
 
 # 模型下载
 modelscope==1.39.1
