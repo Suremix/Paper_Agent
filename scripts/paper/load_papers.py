@@ -32,6 +32,7 @@ logger = logging.getLogger(__name__)
 
 
 class MinerU_Client:
+    """负责连接MinerU的FastAPI接口"""
     def __init__(self, host: str, port: str, num_retry: int = 5, sleep: int = 3):
         """
         client初始化
@@ -150,22 +151,35 @@ class MinerU_Client:
         return {}
 
 
-def build_paper_folder(file_folder: str, output_folder: str, flag_delete_file: bool = True) -> None:
+def build_paper_folder(
+    pdf_folder: str,
+    output_folder: str,
+    flag_delete_file: bool = True,
+    flag_show_text: bool = False
+) -> None:
     """
     该函数负责为每个论文pdf文件创建文件夹，并将pdf复制到该文件夹下。
-    :param file_folder: 原论文pdf所存放的文件夹
+    :param pdf_folder: 原论文pdf所存放的文件夹
     :param output_folder: paper文件夹需要存放的位置
     :param flag_delete_file: 是否在创建好文件夹后删除papers里的文件
+    :param flag_show_text: 是否显示信息
     :return: None
     """
     # 扫描file_folder文件夹中的文件，获取pdf名称列表（需要检查是否有.gitkeep文件并处理）
-    file_name_list = os.listdir(file_folder)
+    file_name_list = os.listdir(pdf_folder)
     if ".gitkeep" in file_name_list:
         file_name_list.remove(".gitkeep")   # 移除.gitkeep文件
 
     # 遍历列表，在output_folder中创建文件夹，并移动pdf
     os.makedirs(output_folder, exist_ok=True)   # 确保输出文件夹存在
-    for i, file_name in enumerate(tqdm(file_name_list, desc="Build Paper Folder", file=sys.stdout, leave=True)):
+
+    # 根据信号决定是否显示精度条
+    if flag_show_text is True:
+        enu = tqdm(file_name_list, desc="Build Paper Folder", file=sys.stdout, leave=True)
+    else:
+        enu = file_name_list
+    # 遍历文件
+    for i, file_name in enumerate(enu):
         # 获取无后缀处理空格后的pdf的名字
         paper_name = os.path.splitext(file_name)[0].strip(" ")
 
@@ -174,7 +188,7 @@ def build_paper_folder(file_folder: str, output_folder: str, flag_delete_file: b
         os.makedirs(paper_folder, exist_ok=True)
 
         # 移动文件并更名为paper.pdf
-        file_path = os.path.join(file_folder, file_name)  # 原文件路径
+        file_path = os.path.join(pdf_folder, file_name)  # 原文件路径
         new_paper_path = os.path.join(paper_folder, "paper.pdf")  # 新文件路径
 
         if flag_delete_file is True:
@@ -197,19 +211,20 @@ def clean_temp_folder() -> None:
             shutil.rmtree(file_path)
 
 
-def pares_papers(folder_path: str) -> None:
+def pares_papers(processed_folder: str, flag_show_text: bool = False) -> None:
     """
     该函数负责把processed_papers里，没有paper.md与contents.json的论文处理为资料
-    :param folder_path: paper文件夹路径
+    :param processed_folder: paper文件夹所在文件夹
+    :param flag_show_text: 是否显示信息
     :return: None
     """
     # 获取paper_name_list，然后遍历
-    paper_name_list = os.listdir(folder_path)
+    paper_name_list = os.listdir(processed_folder)
     need_list = []
     # 先看有没有paper.md和contents.pkl，如果没有，就存到一个列表need_list
     for paper_name in paper_name_list:
-        md_path = os.path.join(folder_path, "{}/paper.md".format(paper_name))
-        contents_path = os.path.join(folder_path, "{}/contents.json".format(paper_name))
+        md_path = os.path.join(processed_folder, "{}/paper.md".format(paper_name))
+        contents_path = os.path.join(processed_folder, "{}/contents.json".format(paper_name))
 
         if os.path.exists(md_path) is False or os.path.exists(contents_path) is False:
             need_list.append(paper_name)
@@ -222,9 +237,15 @@ def pares_papers(folder_path: str) -> None:
         # 打开client
         with MinerU_Client(host, port) as client:
             # 设置try-except防止报错时没有关闭client
-            for _, paper_name in enumerate(tqdm(need_list, desc="Pares Papers", file=sys.stdout, leave=True)):
+            # 根据信号决定是否显示进度条
+            if flag_show_text is True:
+                enu = tqdm(need_list, desc="Pares Papers", file=sys.stdout, leave=True)
+            else:
+                enu = need_list
+            # 遍历需要load的文件
+            for _, paper_name in enumerate(enu):
                 # 把pdf_path输入给client，获取response
-                pdf_path = os.path.join(folder_path, "{}/paper.pdf".format(paper_name))
+                pdf_path = os.path.join(processed_folder, "{}/paper.pdf".format(paper_name))
                 response = client.parse(pdf_path)
 
                 # 从response中获取results对应的字典，再把md_content和content_list拿出来
@@ -234,11 +255,11 @@ def pares_papers(folder_path: str) -> None:
 
                 # 分别按照paper.md和contents.pkl的路径保存
                 # 保存md
-                md_path = os.path.join(folder_path, "{}/paper.md".format(paper_name))
+                md_path = os.path.join(processed_folder, "{}/paper.md".format(paper_name))
                 with open(md_path, "w", encoding="utf-8") as file:
                     file.write(paper_md)
 
-                contents_path = os.path.join(folder_path, "{}/contents.json".format(paper_name))
+                contents_path = os.path.join(processed_folder, "{}/contents.json".format(paper_name))
                 with open(contents_path, "w", encoding="utf-8") as file:
                     json.dump(contents, file, ensure_ascii=True, indent=4)
 

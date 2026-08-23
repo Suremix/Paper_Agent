@@ -92,24 +92,31 @@ def split_paper(paper_md: str, chunk_size: int, overlap: int) -> list[Document]:
     return docs
 
 
-def split_all_papers(folder_path: str, flag_reload: bool = False) -> None:
+def split_all_papers(processed_folder: str, flag_reload: bool = False, flag_show_text: bool = False) -> None:
     """
     该函数会对data/processed_papers的所有文件夹遍历，对没有docs.pkl的论文进行处理。
-    :param folder_path: paper文件夹所在位置
+    :param processed_folder: paper文件夹所在文件夹
     :param flag_reload: 若为True，则即便docs.pkl已存在，也会进行切分并覆盖
+    :param flag_show_text: 是否显示信息
     :return:
     """
     # 获取paper_name_list并遍历
-    paper_name_list = os.listdir(folder_path)
-    for _, paper_name in enumerate(tqdm(paper_name_list, desc="Split Papers", file=sys.stdout, leave=True)):
+    paper_name_list = os.listdir(processed_folder)
+    # 根据信号决定是否显示进度条
+    if flag_show_text is True:
+        enu = tqdm(paper_name_list, desc="Split Papers", file=sys.stdout, leave=True)
+    else:
+        enu = paper_name_list
+    # 遍历所有paper文件夹
+    for _, paper_name in enumerate(enu):
         # 构建docs.pkl的路径
-        docs_path = os.path.join(folder_path, "{}/docs.pkl".format(paper_name))
+        docs_path = os.path.join(processed_folder, "{}/docs.pkl".format(paper_name))
 
         # 如果没有docs.pkl，或者flag_reload为True，则对该paper进行切分
         chunk_size = configs["split"]["chunk_size"]
         overlap = configs["split"]["overlap"]
         if os.path.exists(docs_path) is False or flag_reload is True:
-            md_path = os.path.join(folder_path, "{}/paper.md".format(paper_name))
+            md_path = os.path.join(processed_folder, "{}/paper.md".format(paper_name))
             paper_md = load_paper_md(md_path)
             docs = split_paper(paper_md, chunk_size, overlap)
 
@@ -130,7 +137,7 @@ def split_all_papers(folder_path: str, flag_reload: bool = False) -> None:
                 "chunk_size": chunk_size,
                 "overlap": overlap,
             }
-            config_path = os.path.join(folder_path, "{}/config_split.json".format(paper_name))
+            config_path = os.path.join(processed_folder, "{}/config_split.json".format(paper_name))
             with open(config_path, "w", encoding="utf-8") as file:
                 json.dump(config, file, ensure_ascii=True, indent=4)
 
