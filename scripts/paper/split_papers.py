@@ -98,7 +98,7 @@ def split_all_papers(processed_folder: str, flag_reload: bool = False, flag_show
     :param processed_folder: paper文件夹所在文件夹
     :param flag_reload: 若为True，则即便docs.pkl已存在，也会进行切分并覆盖
     :param flag_show_text: 是否显示信息
-    :return:
+    :return: None
     """
     # 获取paper_name_list并遍历
     paper_name_list = os.listdir(processed_folder)
